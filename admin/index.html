@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Yönetim | Kitâbe-i Seng-i Mâzî</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --paper: #f3eee3;
+  --paper2: #faf7f0;
+  --ink: #292a26;
+  --muted: #777368;
+  --line: #d0c7b7;
+  --accent: #836a46;
+  --danger: #8a4038;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* HEADER */
+
+header {
+  height: 76px;
+  padding: 0 6%;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(243,238,227,.98);
+}
+
+.brand {
+  font-size: 18px;
+}
+
+.brand small {
+  display: block;
+  margin-top: 3px;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .23em;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* BUTTONS */
+
+.btn {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: white;
+  padding: 10px 16px;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: .05em;
+}
+
+.btn.secondary {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--line);
+}
+
+.btn.danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: #cba9a5;
+}
+
+/* LOGIN */
+
+#loginView {
+  min-height: calc(100vh - 76px);
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+
+.login-box {
+  width: min(430px, 100%);
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  padding: 40px;
+}
+
+.login-box h1 {
+  font-size: 29px;
+  font-weight: 400;
+  margin-bottom: 7px;
+}
+
+.login-box > p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+/* FORMS */
+
+label {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #fffdf8;
+  color: var(--ink);
+  padding: 11px 12px;
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ADMIN */
+
+#adminView {
+  display: none;
+}
+
+main {
+  width: min(1200px, 90%);
+  margin: 45px auto 100px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: 9px;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+h1, h2, h3 {
+  font-weight: 400;
+}
+
+.page-head h1 {
+  font-size: 34px;
+}
+
+/* LIST */
+
+.eser-list {
+  display: grid;
+  gap: 12px;
+}
+
+.eser-card {
+  border: 1px solid var(--line);
+  background: rgba(250,247,240,.65);
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+}
+
+.eser-card h3 {
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+
+.eser-meta {
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+}
+
+.eser-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* MODAL */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(30,29,25,.55);
+  display: none;
+  overflow-y: auto;
+  padding: 40px 15px;
+}
+
+.modal.open {
+  display: block;
+}
+
+.modal-panel {
+  width: min(850px, 100%);
+  margin: auto;
+  background: var(--paper);
+  border: 1px solid #bdb3a2;
+  padding: 35px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 25px;
+}
+
+.close {
+  border: 0;
+  background: transparent;
+  font-size: 25px;
+  color: var(--muted);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-section {
+  margin: 32px 0 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.form-section h3 {
+  margin-bottom: 5px;
+}
+
+.form-section p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.preview {
+  margin-top: 10px;
+  max-width: 250px;
+  max-height: 160px;
+  object-fit: cover;
+  display: none;
+  border: 1px solid var(--line);
+}
+
+/* KITABELER */
+
+.kitabe-list {
+  margin-top: 25px;
+  display: grid;
+  gap: 10px;
+}
+
+.kitabe-item {
+  padding: 15px;
+  border: 1px solid var(--line);
+  background: var(--paper2);
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.kitabe-item small {
+  color: var(--muted);
+}
+
+.empty {
+  border: 1px dashed var(--line);
+  padding: 35px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.status {
+  margin-top: 15px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media(max-width:700px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .eser-card {
+    grid-template-columns: 1fr;
+  }
+
+  .eser-actions {
+    flex-wrap: wrap;
+  }
+
+  .page-head {
+    align-items: flex-start;
+    gap: 20px;
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    Kitâbe-i Seng-i Mâzî
+    <small>Yönetim Paneli</small>
+  </div>
+
+  <div class="header-actions">
+    <button
+      id="logoutBtn"
+      class="btn secondary"
+      style="display:none"
+      onclick="logout()">
+      Çıkış
+    </button>
+  </div>
+</header>
+
+
+<!-- GİRİŞ -->
+
+<section id="loginView">
+
+  <div class="login-box">
+
+    <h1>Yönetim Girişi</h1>
+    <p>Arşiv yönetimine devam etmek için giriş yap.</p>
+
+    <div class="field">
+      <label>E-posta</label>
+      <input id="email" type="email">
+    </div>
+
+    <div class="field">
+      <label>Şifre</label>
+      <input id="password" type="password">
+    </div>
+
+    <button class="btn" onclick="login()">
+      Giriş Yap
+    </button>
+
+    <div class="status" id="loginStatus"></div>
+
+  </div>
+
+</section>
+
+
+<!-- PANEL -->
+
+<section id="adminView">
+
+<main>
+
+  <div class="page-head">
+
+    <div>
+      <div class="eyebrow">Arşiv Yönetimi</div>
+      <h1>Eserler</h1>
+    </div>
+
+    <button class="btn" onclick="yeniEser()">
+      + Yeni Eser
+    </button>
+
+  </div>
+
+  <div id="eserList" class="eser-list"></div>
+
+</main>
+
+</section>
+
+
+<!-- ESER MODAL -->
+
+<div class="modal" id="eserModal">
+
+<div class="modal-panel">
+
+  <div class="modal-head">
+    <h2 id="eserModalTitle">Yeni Eser</h2>
+    <button class="close" onclick="modalKapat('eserModal')">×</button>
+  </div>
+
+  <input type="hidden" id="eserId">
+
+  <div class="field">
+    <label>Eser Adı *</label>
+    <input id="ad">
+  </div>
+
+  <div class="grid2">
+
+    <div class="field">
+      <label>İlçe *</label>
+      <input id="ilce">
+    </div>
+
+    <div class="field">
+      <label>Mahalle *</label>
+      <input id="mahalle">
+    </div>
+
+    <div class="field">
+      <label>Eser Türü</label>
+      <input id="tur" placeholder="Çeşme, cami, türbe...">
+    </div>
+
+    <div class="field">
+      <label>Miladî Tarih</label>
+      <input id="miladi_tarih">
+    </div>
+
+    <div class="field">
+      <label>Hicrî Tarih</label>
+      <input id="hicri_tarih">
+    </div>
+
+    <div class="field">
+      <label>Yaptıran</label>
+      <input id="yaptiran">
+    </div>
+
+    <div class="field">
+      <label>Yapan / Mimar</label>
+      <input id="yapan">
+    </div>
+
+    <div class="field">
+      <label>Adres</label>
+      <input id="adres">
+    </div>
+
+    <div class="field">
+      <label>Enlem</label>
+      <input id="enlem" type="number" step="any">
+    </div>
+
+    <div class="field">
+      <label>Boylam</label>
+      <input id="boylam" type="number" step="any">
+    </div>
+
+  </div>
+
+  <div class="field">
+    <label>Tarihçe</label>
+    <textarea id="tarihce"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Özellikleri</label>
+    <textarea id="ozellikler"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Eser Fotoğrafı</label>
+    <input id="kapakDosya" type="file" accept="image/*">
+    <img id="kapakPreview" class="preview">
+  </div>
+
+  <button class="btn" onclick="eserKaydet()">
+    Eseri Kaydet
+  </button>
+
+  <span class="status" id="eserStatus"></span>
+
+
+  <div id="kitabeArea" style="display:none">
+
+    <div class="form-section">
+      <h3>Kitabeler</h3>
+      <p>Bu esere bağlı bir veya birden fazla kitabe ekleyebilirsin.</p>
+    </div>
+
+    <button class="btn secondary" onclick="yeniKitabe()">
+      + Kitabe Ekle
+    </button>
+
+    <div id="kitabeList" class="kitabe-list"></div>
+
+  </div>
+
+</div>
+</div>
+
+
+<!-- KİTABE MODAL -->
+
+<div class="modal" id="kitabeModal">
+
+<div class="modal-panel">
+
+  <div class="modal-head">
+    <h2 id="kitabeModalTitle">Kitabe Ekle</h2>
+    <button class="close" onclick="modalKapat('kitabeModal')">×</button>
+  </div>
+
+  <input type="hidden" id="kitabeId">
+
+  <div class="grid2">
+
+    <div class="field">
+      <label>Başlık</label>
+      <input id="kitabeBaslik"
+             placeholder="İnşa Kitabesi, Tamir Kitabesi...">
+    </div>
+
+    <div class="field">
+      <label>Sıra</label>
+      <input id="kitabeSira" type="number" value="1">
+    </div>
+
+    <div class="field">
+      <label>Kitabe Tarihi</label>
+      <input id="kitabeTarih">
+    </div>
+
+    <div class="field">
+      <label>Hattat</label>
+      <input id="hattat">
+    </div>
+
+  </div>
+
+  <div class="field">
+    <label>Kitabe Fotoğrafı</label>
+    <input id="kitabeDosya" type="file" accept="image/*">
+    <img id="kitabePreview" class="preview">
+  </div>
+
+  <div class="field">
+    <label>Okunuşu</label>
+    <textarea id="okunus"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Sadeleştirilmiş Hâli</label>
+    <textarea id="sadelestirme"></textarea>
+  </div>
+
+  <button class="btn" onclick="kitabeKaydet()">
+    Kitabeyi Kaydet
+  </button>
+
+  <span id="kitabeStatus" class="status"></span>
+
+</div>
+</div>
+
+
+<script>
+const SUPABASE_URL =
+  "https://mdudrzlathbtbqschnmu.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_017pwWESopoIzZaXV9WwdA_lGB9m3hV";
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let aktifEserId = null;
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function login() {
+
+  const email = document
+    .getElementById("email")
+    .value
+    .trim();
+
+  const password = document
+    .getElementById("password")
+    .value;
+
+  const status =
+    document.getElementById("loginStatus");
+
+  status.textContent = "Giriş yapılıyor...";
+
+  const { error } =
+    await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    status.textContent =
+      "Giriş başarısız: " + error.message;
+    return;
+  }
+
+  status.textContent = "";
+
+  await ekranKontrol();
+}
+
+
+async function logout() {
+
+  await db.auth.signOut();
+
+  await ekranKontrol();
+}
+
+
+async function ekranKontrol() {
+
+  const {
+    data: { session }
+  } = await db.auth.getSession();
+
+  const loginView =
+    document.getElementById("loginView");
+
+  const adminView =
+    document.getElementById("adminView");
+
+  const logoutBtn =
+    document.getElementById("logoutBtn");
+
+  if (session) {
+
+    loginView.style.display = "none";
+    adminView.style.display = "block";
+    logoutBtn.style.display = "inline-block";
+
+    await eserleriGetir();
+
+  } else {
+
+    loginView.style.display = "grid";
+    adminView.style.display = "none";
+    logoutBtn.style.display = "none";
+
+  }
+}
+
+
+/* =========================
+   ESERLER
+========================= */
+
+async function eserleriGetir() {
+
+  const list =
+    document.getElementById("eserList");
+
+  list.innerHTML =
+    '<div class="empty">Eserler yükleniyor...</div>';
+
+  const { data, error } =
+    await db
+      .from("eserler")
+      .select("*")
+      .order("ad");
+
+  if (error) {
+    list.innerHTML =
+      `<div class="empty">${escapeHtml(error.message)}</div>`;
+    return;
+  }
+
+  if (!data.length) {
+
+    list.innerHTML = `
+      <div class="empty">
+        Henüz eser eklenmedi.<br><br>
+        İlk eserini eklemek için
+        <strong>+ Yeni Eser</strong> düğmesine bas.
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  for (const eser of data) {
+
+    const card =
+      document.createElement("article");
+
+    card.className = "eser-card";
+
+    card.innerHTML = `
+      <div>
+        <h3>${escapeHtml(eser.ad)}</h3>
+
+        <div class="eser-meta">
+          ${escapeHtml(eser.ilce)}
+          ·
+          ${escapeHtml(eser.mahalle)}
+          ${eser.tur
+            ? " · " + escapeHtml(eser.tur)
+            : ""}
+        </div>
+      </div>
+
+      <div class="eser-actions">
+
+        <button
+          class="btn secondary"
+          onclick="eserDuzenle(${eser.id})">
+          Düzenle
+        </button>
+
+        <button
+          class="btn danger"
+          onclick="eserSil(${eser.id})">
+          Sil
+        </button>
+
+      </div>
+    `;
+
+    list.appendChild(card);
+  }
+}
+
+
+function yeniEser() {
+
+  aktifEserId = null;
+
+  document.getElementById("eserId").value = "";
+
+  [
+    "ad",
+    "ilce",
+    "mahalle",
+    "tur",
+    "miladi_tarih",
+    "hicri_tarih",
+    "yaptiran",
+    "yapan",
+    "adres",
+    "enlem",
+    "boylam",
+    "tarihce",
+    "ozellikler"
+  ].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+
+  document.getElementById("kapakDosya").value = "";
+
+  document.getElementById("kapakPreview").style.display =
+    "none";
+
+  document.getElementById("eserModalTitle").textContent =
+    "Yeni Eser";
+
+  document.getElementById("kitabeArea").style.display =
+    "none";
+
+  document.getElementById("eserStatus").textContent = "";
+
+  modalAc("eserModal");
+}
+
+
+async function eserDuzenle(id) {
+
+  const { data, error } =
+    await db
+      .from("eserler")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  aktifEserId = data.id;
+
+  document.getElementById("eserId").value =
+    data.id;
+
+  const alanlar = [
+    "ad",
+    "ilce",
+    "mahalle",
+    "tur",
+    "miladi_tarih",
+    "hicri_tarih",
+    "yaptiran",
+    "yapan",
+    "adres",
+    "enlem",
+    "boylam",
+    "tarihce",
+    "ozellikler"
+  ];
+
+  for (const alan of alanlar) {
+    document.getElementById(alan).value =
+      data[alan] ?? "";
+  }
+
+  const preview =
+    document.getElementById("kapakPreview");
+
+  if (data.kapak_fotografi) {
+    preview.src = data.kapak_fotografi;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+
+  document.getElementById("eserModalTitle").textContent =
+    data.ad;
+
+  document.getElementById("kitabeArea").style.display =
+    "block";
+
+  document.getElementById("eserStatus").textContent = "";
+
+  await kitabeleriGetir();
+
+  modalAc("eserModal");
+}
+
+
+async function eserKaydet() {
+
+  const status =
+    document.getElementById("eserStatus");
+
+  const ad =
+    document.getElementById("ad").value.trim();
+
+  const ilce =
+    document.getElementById("ilce").value.trim();
+
+  const mahalle =
+    document.getElementById("mahalle").value.trim();
+
+  if (!ad || !ilce || !mahalle) {
+    status.textContent =
+      "Eser adı, ilçe ve mahalle zorunludur.";
+    return;
+  }
+
+  status.textContent = "Kaydediliyor...";
+
+  let kapakFotografi = null;
+
+  const id =
+    document.getElementById("eserId").value;
+
+  if (id) {
+
+    const { data } =
+      await db
+        .from("eserler")
+        .select("kapak_fotografi")
+        .eq("id", id)
+        .single();
+
+    kapakFotografi =
+      data?.kapak_fotografi ?? null;
+  }
+
+  const dosya =
+    document.getElementById("kapakDosya").files[0];
+
+  if (dosya) {
+
+    const uploaded =
+      await gorselYukle(
+        dosya,
+        "eserler"
+      );
+
+    if (!uploaded) {
+      status.textContent =
+        "Fotoğraf yüklenemedi.";
+      return;
+    }
+
+    kapakFotografi = uploaded;
+  }
+
+  const kayit = {
+
+    ad,
+
+    slug: slugify(ad),
+
+    ilce,
+
+    mahalle,
+
+    tur:
+      document.getElementById("tur").value.trim() || null,
+
+    miladi_tarih:
+      document.getElementById("miladi_tarih").value.trim() || null,
+
+    hicri_tarih:
+      document.getElementById("hicri_tarih").value.trim() || null,
+
+    yaptiran:
+      document.getElementById("yaptiran").value.trim() || null,
+
+    yapan:
+      document.getElementById("yapan").value.trim() || null,
+
+    adres:
+      document.getElementById("adres").value.trim() || null,
+
+    enlem:
+      numOrNull(
+        document.getElementById("enlem").value
+      ),
+
+    boylam:
+      numOrNull(
+        document.getElementById("boylam").value
+      ),
+
+    tarihce:
+      document.getElementById("tarihce").value.trim() || null,
+
+    ozellikler:
+      document.getElementById("ozellikler").value.trim() || null,
+
+    kapak_fotografi:
+      kapakFotografi,
+
+    updated_at:
+      new Date().toISOString()
+  };
+
+  let sonuc;
+
+  if (id) {
+
+    sonuc =
+      await db
+        .from("eserler")
+        .update(kayit)
+        .eq("id", id)
+        .select()
+        .single();
+
+  } else {
+
+    sonuc =
+      await db
+        .from("eserler")
+        .insert(kayit)
+        .select()
+        .single();
+  }
+
+  if (sonuc.error) {
+    status.textContent =
+      "Hata: " + sonuc.error.message;
+    return;
+  }
+
+  aktifEserId =
+    sonuc.data.id;
+
+  document.getElementById("eserId").value =
+    sonuc.data.id;
+
+  document.getElementById("eserModalTitle").textContent =
+    sonuc.data.ad;
+
+  document.getElementById("kitabeArea").style.display =
+    "block";
+
+  status.textContent =
+    "Eser kaydedildi.";
+
+  await eserleriGetir();
+  await kitabeleriGetir();
+}
+
+
+async function eserSil(id) {
+
+  if (!confirm(
+    "Bu eseri ve ona bağlı bütün kitabeleri silmek istediğine emin misin?"
+  )) {
+    return;
+  }
+
+  const { error } =
+    await db
+      .from("eserler")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  await eserleriGetir();
+}
+
+
+/* =========================
+   KİTABELER
+========================= */
+
+async function kitabeleriGetir() {
+
+  if (!aktifEserId) return;
+
+  const list =
+    document.getElementById("kitabeList");
+
+  list.innerHTML = "";
+
+  const { data, error } =
+    await db
+      .from("kitabeler")
+      .select("*")
+      .eq("eser_id", aktifEserId)
+      .order("sira");
+
+  if (error) {
+    list.innerHTML =
+      escapeHtml(error.message);
+    return;
+  }
+
+  if (!data.length) {
+    list.innerHTML =
+      '<div class="empty">Bu esere henüz kitabe eklenmedi.</div>';
+    return;
+  }
+
+  for (const kitabe of data) {
+
+    const item =
+      document.createElement("div");
+
+    item.className = "kitabe-item";
+
+    item.innerHTML = `
+      <div>
+        <strong>
+          ${escapeHtml(
+            kitabe.baslik ||
+            ("Kitabe " + kitabe.sira)
+          )}
+        </strong>
+
+        <br>
+
+        <small>
+          ${escapeHtml(kitabe.tarih || "")}
+        </small>
+      </div>
+
+      <div class="eser-actions">
+
+        <button
+          class="btn secondary"
+          onclick="kitabeDuzenle(${kitabe.id})">
+          Düzenle
+        </button>
+
+        <button
+          class="btn danger"
+          onclick="kitabeSil(${kitabe.id})">
+          Sil
+        </button>
+
+      </div>
+    `;
+
+    list.appendChild(item);
+  }
+}
+
+
+function yeniKitabe() {
+
+  if (!aktifEserId) {
+    alert("Önce eseri kaydet.");
+    return;
+  }
+
+  document.getElementById("kitabeId").value = "";
+  document.getElementById("kitabeBaslik").value = "";
+  document.getElementById("kitabeSira").value = "1";
+  document.getElementById("kitabeTarih").value = "";
+  document.getElementById("hattat").value = "";
+  document.getElementById("okunus").value = "";
+  document.getElementById("sadelestirme").value = "";
+  document.getElementById("kitabeDosya").value = "";
+
+  document.getElementById("kitabePreview").style.display =
+    "none";
+
+  document.getElementById("kitabeModalTitle").textContent =
+    "Kitabe Ekle";
+
+  document.getElementById("kitabeStatus").textContent =
+    "";
+
+  modalAc("kitabeModal");
+}
+
+
+async function kitabeDuzenle(id) {
+
+  const { data, error } =
+    await db
+      .from("kitabeler")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  document.getElementById("kitabeId").value =
+    data.id;
+
+  document.getElementById("kitabeBaslik").value =
+    data.baslik ?? "";
+
+  document.getElementById("kitabeSira").value =
+    data.sira ?? 1;
+
+  document.getElementById("kitabeTarih").value =
+    data.tarih ?? "";
+
+  document.getElementById("hattat").value =
+    data.hattat ?? "";
+
+  document.getElementById("okunus").value =
+    data.okunus ?? "";
+
+  document.getElementById("sadelestirme").value =
+    data.sadelestirme ?? "";
+
+  const preview =
+    document.getElementById("kitabePreview");
+
+  if (data.fotograf) {
+    preview.src = data.fotograf;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+
+  document.getElementById("kitabeModalTitle").textContent =
+    data.baslik || "Kitabeyi Düzenle";
+
+  document.getElementById("kitabeStatus").textContent =
+    "";
+
+  modalAc("kitabeModal");
+}
+
+
+async function kitabeKaydet() {
+
+  if (!aktifEserId) return;
+
+  const status =
+    document.getElementById("kitabeStatus");
+
+  status.textContent =
+    "Kaydediliyor...";
+
+  const id =
+    document.getElementById("kitabeId").value;
+
+  let fotograf = null;
+
+  if (id) {
+
+    const { data } =
+      await db
+        .from("kitabeler")
+        .select("fotograf")
+        .eq("id", id)
+        .single();
+
+    fotograf =
+      data?.fotograf ?? null;
+  }
+
+  const dosya =
+    document.getElementById("kitabeDosya").files[0];
+
+  if (dosya) {
+
+    const uploaded =
+      await gorselYukle(
+        dosya,
+        "kitabeler"
+      );
+
+    if (!uploaded) {
+      status.textContent =
+        "Fotoğraf yüklenemedi.";
+      return;
+    }
+
+    fotograf = uploaded;
+  }
+
+  const kayit = {
+
+    eser_id:
+      aktifEserId,
+
+    baslik:
+      document.getElementById("kitabeBaslik").value.trim()
+      || null,
+
+    sira:
+      Number(
+        document.getElementById("kitabeSira").value
+      ) || 1,
+
+    tarih:
+      document.getElementById("kitabeTarih").value.trim()
+      || null,
+
+    hattat:
+      document.getElementById("hattat").value.trim()
+      || null,
+
+    fotograf,
+
+    okunus:
+      document.getElementById("okunus").value.trim()
+      || null,
+
+    sadelestirme:
+      document.getElementById("sadelestirme").value.trim()
+      || null
+  };
+
+  let sonuc;
+
+  if (id) {
+
+    sonuc =
+      await db
+        .from("kitabeler")
+        .update(kayit)
+        .eq("id", id);
+
+  } else {
+
+    sonuc =
+      await db
+        .from("kitabeler")
+        .insert(kayit);
+  }
+
+  if (sonuc.error) {
+    status.textContent =
+      "Hata: " + sonuc.error.message;
+    return;
+  }
+
+  status.textContent =
+    "Kitabe kaydedildi.";
+
+  await kitabeleriGetir();
+
+  setTimeout(() => {
+    modalKapat("kitabeModal");
+  }, 400);
+}
+
+
+async function kitabeSil(id) {
+
+  if (!confirm(
+    "Bu kitabeyi silmek istediğine emin misin?"
+  )) {
+    return;
+  }
+
+  const { error } =
+    await db
+      .from("kitabeler")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  await kitabeleriGetir();
+}
+
+
+/* =========================
+   STORAGE
+========================= */
+
+async function gorselYukle(file, klasor) {
+
+  const ext =
+    file.name.split(".").pop().toLowerCase();
+
+  const fileName =
+    `${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+  const path =
+    `${klasor}/${fileName}`;
+
+  const { error } =
+    await db.storage
+      .from("gorseller")
+      .upload(path, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  const { data } =
+    db.storage
+      .from("gorseller")
+      .getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+
+/* =========================
+   YARDIMCILAR
+========================= */
+
+function modalAc(id) {
+  document
+    .getElementById(id)
+    .classList.add("open");
+}
+
+
+function modalKapat(id) {
+  document
+    .getElementById(id)
+    .classList.remove("open");
+}
+
+
+function slugify(text) {
+
+  return text
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+
+function numOrNull(value) {
+
+  if (
+    value === "" ||
+    value === null ||
+    value === undefined
+  ) {
+    return null;
+  }
+
+  const n = Number(value);
+
+  return Number.isFinite(n)
+    ? n
+    : null;
+}
+
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+/* =========================
+   BAŞLAT
+========================= */
+
+ekranKontrol();
+
+</script>
+
+</body>
+</html>
